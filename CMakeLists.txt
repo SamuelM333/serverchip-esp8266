@@ -59,4 +59,13 @@ INCLUDE_DIRECTORIES(
         .piolibdeps/LinkedList_ID443
 )
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(
+        ${PROJECT_NAME}
+        src/models.h
+        src/main.h
+        src/main.cpp
+        src/helpers.h
+        src/helpers.cpp
+        src/ws_events.h
+        src/ws_events.cpp
+)
