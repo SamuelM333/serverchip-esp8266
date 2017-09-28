@@ -85,3 +85,9 @@ void handle_microchip_connected_ack(const char *payload, size_t length) {
 		tasks.add(task);
 	}
 }
+
+void init_websocket_events() {
+	webSocket.on("microchip_connected_ack", handle_microchip_connected_ack);
+	webSocket.on("run_task_request_microchip", handle_run_task_request_microchip);
+	webSocket.on("get_port_status", handle_get_ports_status);
+}

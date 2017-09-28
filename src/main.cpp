@@ -60,9 +60,7 @@ void setup() {
 	Serial.printf("Connected to %s! Local IP: %s\n", SSID, WiFi.localIP().toString().c_str());
 
 	// Add events
-	webSocket.on("microchip_connected_ack", handle_microchip_connected_ack);
-	webSocket.on("run_task_request_microchip", handle_run_task_request_microchip);
-	webSocket.on("get_port_status_request", handle_get_port_status);
+	init_websocket_events();
 
 	// Connect to WS server
 	webSocket.begin(WS_SERVER_IP, WS_SERVER_PORT);
