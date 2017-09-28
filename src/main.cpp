@@ -1,9 +1,3 @@
-//#include <stdlib.h>
-#include <Arduino.h>
-//#include <string.h>
-
-//#include "gpio.h"
-
 #include "main.h"
 #include "ws_events.h"
 
@@ -11,20 +5,21 @@ using namespace std;
 
 ESP8266WiFiMulti WiFiMulti;
 SocketIoClient webSocket;
-LinkedList<Task> tasks = LinkedList<Task>();
+
 
 int buttonState = 0;
-const int buttonPin = 5;
+const int BUTTON_PIN = 5;
+const int GPIO_PORTS[10] = {0, 2, 3, 4, 5, 10, 12, 13, 14, 15};
+const char* GPIO_PORTS_STR[10] = {"0", "2", "3", "4", "5", "10", "12", "13", "14", "15"};
 
 
-// TODO Create function prototypes
 // TODO Comment every function
 
 boolean debounceButton(boolean state) {
-	boolean stateNow = digitalRead(buttonPin);
+	boolean stateNow = digitalRead(BUTTON_PIN);
 	if (state != stateNow) {
 		delay(10); // TODO Remove delay
-		stateNow = digitalRead(buttonPin);
+		stateNow = digitalRead(BUTTON_PIN);
 	}
 	return stateNow;
 }
@@ -32,12 +27,12 @@ boolean debounceButton(boolean state) {
 void setup() {
 	Serial.begin(115200);
 	Serial.setDebugOutput(true);
-	pinMode(LED_BUILTIN, OUTPUT);
 
 	// TODO Create "setup button task" function
 	// initialize the pushbutton pin as an input:
-	pinMode(buttonPin, INPUT);
+	pinMode(BUTTON_PIN, INPUT);
 
+	pinMode(LED_BUILTIN, OUTPUT);
 	digitalWrite(LED_BUILTIN, LOW);
 
 	Serial.println();

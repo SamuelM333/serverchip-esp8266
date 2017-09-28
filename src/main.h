@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <Hash.h>
@@ -8,17 +9,17 @@
 
 // TODO OTA change
 #define SSID "Red Deshabilitada"
-//#define SSID "Murillos"
-//#define PASS "d11748670"
+//#define PASS ""
 #define WS_SERVER_IP "192.168.1.123"
 #define WS_SERVER_PORT 5000
 
 extern ESP8266WiFiMulti WiFiMulti;
 extern SocketIoClient webSocket;
 
-extern const int buttonPin;
+extern const int GPIO_PORTS[10];
+extern const char* GPIO_PORTS_STR[10];
+extern const int BUTTON_PIN;
 extern int buttonState;
 //extern char* sid;
-extern LinkedList<Task> tasks;
 
 #endif //SERVERCHIP_ESP8266_MAIN_H
