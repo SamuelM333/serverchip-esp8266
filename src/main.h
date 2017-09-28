@@ -3,8 +3,6 @@
 #include <Hash.h>
 #include "SocketIoClient.h"
 
-#include "models.h"
-
 #ifndef SERVERCHIP_ESP8266_MAIN_H
 #define SERVERCHIP_ESP8266_MAIN_H
 
