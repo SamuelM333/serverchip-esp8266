@@ -9,16 +9,24 @@
 
 // TODO OTA change
 #define SSID "Red Deshabilitada"
-//#define PASS ""
+#define PASS ""
 #define WS_SERVER_IP "192.168.1.123"
 #define WS_SERVER_PORT 5000
+
+struct Port {
+	uint8_t port_number;
+	boolean state;
+};
 
 extern ESP8266WiFiMulti WiFiMulti;
 extern SocketIoClient webSocket;
 
-extern const int GPIO_PORTS[10];
-extern const char* GPIO_PORTS_STR[10];
-extern const int BUTTON_PIN;
+extern boolean setup_done;
+extern std::map<int, const char *> condition_port_map;
+extern Port port_states[9];
+extern const int GPIO_PORTS[9];
+extern const char *GPIO_PORTS_STR[9];
+//extern const uint8_t BUTTON_PIN;
 extern int buttonState;
 //extern char* sid;
 
