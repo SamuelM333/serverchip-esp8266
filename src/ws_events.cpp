@@ -15,10 +15,6 @@ void handle_microchip_connected_ack(const char *payload, size_t length) {
 	for (JsonArray::iterator tasks_it = tasks_json.begin(); tasks_it != tasks_json.end(); ++tasks_it) {
 		setup_new_task(tasks_it->as<JsonObject &>());
 	}
-
-	Serial.println("setup_done");
-	setup_done = true;
-
 }
 
 void handle_get_ports_status(const char *payload, size_t length) {
@@ -27,15 +23,15 @@ void handle_get_ports_status(const char *payload, size_t length) {
 	StaticJsonBuffer<bufferSize> jsonBuffer;
 	JsonObject &data = jsonBuffer.createObject();
 
-	for (int i = 0, LEN_GPIO_PORTS = LEN(GPIO_PORTS); i < LEN_GPIO_PORTS; i++) {
-		data[GPIO_PORTS_STR[i]] = digitalRead(GPIO_PORTS[i]) ? false : true;
+	for (uint8_t i = 0, LEN_GPIO_PORTS = LEN(GPIO_PORTS); i < LEN_GPIO_PORTS; i++) {
+		data[GPIO_PORTS_STR[i]] = digitalRead(GPIO_PORTS[i]) == 0;
 	}
 
 	data.printTo(response);
 	webSocket.emit("get_port_status_response_server", response);
 }
 
-void emit_port_change(const char *task_id, uint8_t port_number, boolean new_state) {
+void emit_port_change(const char *task_id, uint8_t port_number) {
 	char payload[100];
 	const size_t bufferSize = 2 * JSON_OBJECT_SIZE(2) + 80;
 	StaticJsonBuffer<bufferSize> jsonBuffer;
@@ -43,7 +39,6 @@ void emit_port_change(const char *task_id, uint8_t port_number, boolean new_stat
 	JsonObject &port = data.createNestedObject("port");
 	data["task_id"] = task_id;
 	port["port_number"] = port_number;
-	port["state"] = new_state;
 
 	data.printTo(payload);
 	webSocket.emit("notify_port_change", payload);
@@ -51,13 +46,15 @@ void emit_port_change(const char *task_id, uint8_t port_number, boolean new_stat
 
 void handle_run_task_request_microchip(const char *payload, size_t length) {
 	char *response;
+	Serial.printf("payload: %s\n", payload);
 	JsonObject &output_port = get_json_object(payload)["output_port"];
-	Serial.printf("output_port: %d, state: %s", output_port["number"], output_port["state"] ? "true" : "false");
+	Serial.printf("task ran. output_port: %d, state: %s\n", output_port["number"],
+	              output_port["state"] ? "true" : "false");
 	digitalWrite(output_port["number"], output_port["state"] ? HIGH : LOW);
 
 	// TODO Response message?
 	// TODO Emit ack
-	webSocket.emit("run_task_request_microchip_ack", response);
+	webSocket.emit("run_task_request_microchip_ack", R"({"success": true})");
 }
 
 void init_websocket_events() {

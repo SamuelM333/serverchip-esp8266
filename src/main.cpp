@@ -6,34 +6,14 @@
 ESP8266WiFiMulti WiFiMulti;
 SocketIoClient webSocket;
 std::map<int, const char *> condition_port_map;
+std::map<int, void (*)(void)> input_port_interrupt_handlers;
 
-int buttonState = 0;
-boolean setup_done = false;
-//const uint8_t BUTTON_PIN = 5;
-Port port_states[9];
-const int GPIO_PORTS[9] = {2, 3, 4, 5, 10, 12, 13, 14, 15};
+// TODO Optimize this
+const uint8_t GPIO_PORTS[9] = {2, 3, 4, 5, 10, 12, 13, 14, 15};
 const char *GPIO_PORTS_STR[9] = {"2", "3", "4", "5", "10", "12", "13", "14", "15"};
 
 
 // TODO Comment every function
-
-void check_port_change() {
-	for (int i = 0, LEN_GPIO_PORTS = LEN(GPIO_PORTS); i < LEN_GPIO_PORTS; i++) {
-		boolean new_state = digitalRead(GPIO_PORTS[i]) ? false : true;
-		if (port_states[i].state != new_state) {
-			// State change
-			const char *task_id = condition_port_map[port_states[i].port_number];
-			Serial.printf("%d port changed from %s to %s\n", GPIO_PORTS[i],
-			              port_states[i].state ? "true" : "false",
-			              new_state ? "true" : "false"
-			);
-			emit_port_change(task_id, port_states[i].port_number, new_state);
-			port_states[i].state = new_state;
-//			return;
-			break;
-		}
-	}
-}
 
 void setup() {
 	Serial.begin(115200);
@@ -65,22 +45,25 @@ void setup() {
 	// Connect to WS server
 	webSocket.begin(WS_SERVER_IP, WS_SERVER_PORT);
 
+	// Setup interrupt handlers for input ports
+	input_port_interrupt_handlers[0] = handler_pin0;
+	input_port_interrupt_handlers[2] = handler_pin2;
+	input_port_interrupt_handlers[3] = handler_pin3;
+	input_port_interrupt_handlers[4] = handler_pin4;
+	input_port_interrupt_handlers[5] = handler_pin5;
+	input_port_interrupt_handlers[10] = handler_pin10;
+	input_port_interrupt_handlers[12] = handler_pin12;
+	input_port_interrupt_handlers[13] = handler_pin13;
+	input_port_interrupt_handlers[14] = handler_pin14;
+	input_port_interrupt_handlers[15] = handler_pin15;
+
 	// Emit microchip_connected
 	char payload[50];
-	sprintf(payload, "{\"ip\":\"%s\"}", WiFi.localIP().toString().c_str());
+	sprintf(payload, R"({"ip":"%s"})", WiFi.localIP().toString().c_str());
 	webSocket.emit("microchip_connected", payload);
 
 	Serial.println("Ending setup...");
 	delay(500);
-
-	// Init port_states
-	for (int i = 0, LEN_GPIO_PORTS = LEN(GPIO_PORTS); i < LEN_GPIO_PORTS; i++) {
-		port_states[i].port_number = GPIO_PORTS[i];
-		port_states[i].state = digitalRead(GPIO_PORTS[i]) ? false : true;
-	}
 }
 
-void loop() {
-	webSocket.loop();
-	runEvery(100) check_port_change(); // call this every 100ms
-}
+void loop() { webSocket.loop(); }

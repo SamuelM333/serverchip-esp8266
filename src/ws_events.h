@@ -5,7 +5,7 @@ void handle_microchip_connected_ack(const char *payload, size_t length);
 
 void handle_get_ports_status(const char *payload, size_t length);
 
-void emit_port_change(const char *task_id, uint8_t port_number, boolean new_state);
+void emit_port_change(const char *task_id, uint8_t port_number);
 
 void handle_run_task_request_microchip(const char *payload, size_t length);
 

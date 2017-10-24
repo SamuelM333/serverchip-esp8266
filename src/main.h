@@ -13,21 +13,12 @@
 #define WS_SERVER_IP "192.168.1.123"
 #define WS_SERVER_PORT 5000
 
-struct Port {
-	uint8_t port_number;
-	boolean state;
-};
-
 extern ESP8266WiFiMulti WiFiMulti;
 extern SocketIoClient webSocket;
-
-extern boolean setup_done;
 extern std::map<int, const char *> condition_port_map;
-extern Port port_states[9];
-extern const int GPIO_PORTS[9];
+extern std::map<int, void (*)(void)> input_port_interrupt_handlers;
+extern const uint8_t GPIO_PORTS[9];
 extern const char *GPIO_PORTS_STR[9];
-//extern const uint8_t BUTTON_PIN;
-extern int buttonState;
 //extern char* sid;
 
 #endif //SERVERCHIP_ESP8266_MAIN_H
